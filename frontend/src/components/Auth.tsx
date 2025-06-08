@@ -1,6 +1,9 @@
+
 import axios from "axios"
 import { useState, type ChangeEvent } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import AppBar from "./AppBar"
+
 
 export const Auth=({type}:{type: "signup"|"signin"})=>{
     const navigate=useNavigate()
@@ -21,7 +24,7 @@ export const Auth=({type}:{type: "signup"|"signin"})=>{
             const response= await axios.post(`http://localhost:3000/api/v1/${type=="signup"?"signup":"signin"}`,postInput)
             console.log("hello")
             console.log(response.data)
-            const token=response.data.jwt;
+            const token=response.data.token;
             console.log(token)
             console.log("Response data:", response.data);
             if (token) {
@@ -37,7 +40,10 @@ export const Auth=({type}:{type: "signup"|"signin"})=>{
             setLoading(false)
         }
     }
-    return <div className="h-screen flex justify-center flex-col">
+    return <div >
+        <AppBar type={"Login"}/>
+        <div className="h-screen flex justify-center flex-col shadow-xl ">
+        
         {/* {JSON.stringify(postInput)} */}
         {loading && (
             <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-md shadow-lg z-50 flex items-center space-x-2">
@@ -49,10 +55,10 @@ export const Auth=({type}:{type: "signup"|"signin"})=>{
             </div>
             )}
 
-        <div className="flex  justify-center">
-            <div className="">
-            <div className="px-10">
-                <div className="text-4xl text-white font-bold ">
+        <div className="flex  justify-center  ">
+            <div className="border-2 border-solid border-zinc-700 bg-transparent p-5  rounded-lg shadow-2xl ">
+            <div className="px-10 ">
+                <div className="text-4xl text-white  font-bold ">
                     {type=="signup"?"Create an account":"Login to Your account"}
                 </div>
                 <div className="text-slate-400">
@@ -113,6 +119,7 @@ export const Auth=({type}:{type: "signup"|"signin"})=>{
 
             </div>
         </div>
+    </div>
     </div>
     </div>
 

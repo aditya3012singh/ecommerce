@@ -1,7 +1,7 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import { productSchema } from "../middlewares/ValidateUser.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { authMiddleware } from "../middlewares/aurhMiddleware.js";
 import { requireAdmin } from "../middlewares/roleMiddleware.js";
 
 const prisma = new PrismaClient();

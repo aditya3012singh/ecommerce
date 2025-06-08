@@ -1,7 +1,7 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
-import { authMiddleware } from "../middlewares/aurhMiddleware";
-import { requireAdmin } from "../middlewares/roleMiddleware";
+import { authMiddleware } from "../middlewares/aurhMiddleware.js";
+import { requireAdmin } from "../middlewares/roleMiddleware.js";
 
 const prisma = new PrismaClient();
 const router = express.Router();

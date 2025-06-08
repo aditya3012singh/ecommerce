@@ -15,6 +15,7 @@ const router = express.Router();
 const prisma = new PrismaClient()
 
 router.post('/signup', async (req, res) => {
+  console.log("hello user")
   try {
     const parsed = signupSchema.safeParse(req.body);
 
@@ -43,7 +44,7 @@ router.post('/signup', async (req, res) => {
     });
     
     console.log(user.role)
-    const token = jwt.sign(
+    const jwt = jwt.sign(
       { id: user.id , role: user.role},
       process.env.JWT_SECRET || "secret",
       { expiresIn: "1h" }

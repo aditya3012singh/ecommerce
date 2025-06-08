@@ -1,16 +1,18 @@
 import express from "express";
 import userRouter from "./routes/user.js";
 import dotenv from "dotenv";
-import productRouter from "./routes/product1.js"
+import productRouter from "./routes/product.js"
 import cartRoutes from "./routes/cart.js";
 import orderRoutes from "./routes/order.js"
 dotenv.config();
+import cors from "cors"
+
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json()); // Parse JSON bodies
-
+app.use(cors())
 app.get("/", (req, res) => {
   res.send("API running!");
 });

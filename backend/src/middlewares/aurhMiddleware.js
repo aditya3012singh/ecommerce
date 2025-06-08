@@ -6,6 +6,7 @@ dotenv.config();
 const prisma = new PrismaClient();
 
 export const authMiddleware = async (req, res, next) => {
+    console.log("hello")
     const authHeader = req.headers["authorization"];
     if (!authHeader) return res.status(403).json({ message: "No token provided" });
 

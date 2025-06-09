@@ -24,7 +24,7 @@ export const Auth=({type}:{type: "signup"|"signin"})=>{
             const response= await axios.post(`http://localhost:3000/api/v1/${type=="signup"?"signup":"signin"}`,postInput)
             console.log("hello")
             console.log(response.data)
-            const token=response.data.token;
+             const token = type === "signup" ? response.data.token : response.data.jwt;
             console.log(token)
             console.log("Response data:", response.data);
             if (token) {

@@ -1,3 +1,4 @@
+
 import React from "react";
 import ProductCard from "../components/ProductCard";
 
@@ -121,7 +122,7 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-black to-gray-600">
      <div style={appBarStyle}>
-      <AppBar /></div>
+      <AppBar type="Login"/></div>
       <div style={{ paddingTop: "64px" }}>
         <h1 style={headerStyle}>Explore Our Products</h1>
         <div style={gridStyle}>
@@ -160,4 +161,5 @@ const appBarStyle: React.CSSProperties = {
   right: 0,
   zIndex: 1000, // to ensure it stays above other content
 };
+
 

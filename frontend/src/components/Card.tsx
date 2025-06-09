@@ -18,7 +18,6 @@ export const Card=({title, imageUrl, price, stock}:CardItem)=>{
         <div>{title}</div>
         <div>price ${price.toString()}</div>
         <div>Stock {stock.toString()}</div>
-       </div>
-
+       </div>   
     </div>
 }

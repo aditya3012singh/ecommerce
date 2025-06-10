@@ -56,7 +56,7 @@ export const Auth=({type}:{type: "signup"|"signin"})=>{
             )}
 
         <div className="flex  justify-center  ">
-            <div className="border-2 border-solid border-zinc-700 bg-transparent p-5  rounded-lg shadow-2xl ">
+            <div className="border-2 border-solid border-zinc-700  p-5 bg-black rounded-lg shadow-2xl ">
             <div className="px-10 ">
                 <div className="text-4xl text-white  font-bold ">
                     {type=="signup"?"Create an account":"Login to Your account"}

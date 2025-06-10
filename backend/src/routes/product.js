@@ -16,15 +16,18 @@ router.get("/product/:id", async (req,res)=>{//get a product by id
         if(!productItem){
             return res.status(404).json({message:"Product item not found"})
         }
-        return res.status(201).json({
-            id:productItem.id,
-            title:productItem.title,
-            description:productItem.description,
-            price:productItem.price,
-            imageUrl:productItem.imageUrl,
-            stock:productItem.stock,
-            Category:productItem.Category,
-            createdAt:productItem.createdAt
+        return res.status(200).json({
+            product:{
+                id:productItem.id,
+                title:productItem.title,
+                description:productItem.description,
+                price:productItem.price,
+                imageUrl:productItem.imageUrl,
+                stock:productItem.stock,
+                Category:productItem.Category,
+                createdAt:productItem.createdAt
+            }
+
         })
     }catch(error){
         console.error(error);

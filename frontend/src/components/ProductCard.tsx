@@ -7,7 +7,7 @@ type ProductCardProps = {
   price: number;
   imageUrl: string;
   stock: number;
-  category: string;
+  Category: string;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -16,69 +16,27 @@ const ProductCard: React.FC<ProductCardProps> = ({
   price,
   imageUrl,
   stock,
-  category,
+  Category,
 }) => {
   return (
     <div
-      style={cardStyle}
-      onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.03)")}
-      onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+      className="bg-black text-white rounded-lg shadow-lg p-5 m-4 max-w-xs font-sans transition-transform duration-200 transform hover:scale-105 cursor-pointer"
       title={title}
     >
-      <img src={imageUrl} alt={title} style={imageStyle} />
-      <h3 style={titleStyle}>{title}</h3>
-      <p style={descStyle}>{description}</p>
-      <p style={{ fontStyle: "italic", marginBottom: "8px" }}>Category: {category}</p>
-      <p style={priceStyle}>₹{price.toFixed(2)}</p>
-      <p style={stockStyle}>{stock > 0 ? `In stock: ${stock}` : "Out of stock"}</p>
+      <img
+        src={imageUrl}
+        alt={title}
+        className="w-full h-44 object-cover rounded-md mb-4"
+      />
+      <h3 className="text-xl font-bold mb-2">{title}</h3>
+      <p className="text-sm opacity-75 mb-3 leading-snug">{description}</p>
+      <p className="italic mb-2">Category: {Category}</p>
+      <p className="text-lg font-bold mb-3">₹{price.toFixed(2)}</p>
+      <p className="text-xs text-gray-300">
+        {stock > 0 ? `In stock: ${stock}` : "Out of stock"}
+      </p>
     </div>
   );
 };
 
 export default ProductCard;
-
-
-const cardStyle: React.CSSProperties = {
-  backgroundColor: "#000", // black background
-  color: "#fff",           // white text
-  borderRadius: "8px",
-  boxShadow: "0 4px 8px rgba(255, 255, 255, 0.1)", // subtle white shadow
-  padding: "20px",
-  margin: "15px",
-  maxWidth: "280px",
-  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-  transition: "transform 0.2s ease",
-  cursor: "pointer",
-};
-
-const imageStyle: React.CSSProperties = {
-  width: "100%",
-  height: "180px",
-  objectFit: "cover",
-  borderRadius: "6px",
-  marginBottom: "15px",
-};
-
-const titleStyle: React.CSSProperties = {
-  fontSize: "1.25rem",
-  fontWeight: "700",
-  marginBottom: "8px",
-};
-
-const descStyle: React.CSSProperties = {
-  fontSize: "0.9rem",
-  opacity: 0.75,
-  marginBottom: "12px",
-  lineHeight: "1.3",
-};
-
-const priceStyle: React.CSSProperties = {
-  fontWeight: "bold",
-  fontSize: "1.1rem",
-  marginBottom: "12px",
-};
-
-const stockStyle: React.CSSProperties = {
-  fontSize: "0.85rem",
-  color: "#ccc",
-};

@@ -1,9 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
-
 import AppBar from "../components/AppBar";
-import axios from "axios";
 import { useProducts } from "../hooks";
 
 export interface Product {
@@ -48,6 +46,48 @@ export default Home;
 
 
  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // useEffect(() => {
   //   const fetchData = async () => {

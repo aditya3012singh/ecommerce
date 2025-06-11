@@ -29,7 +29,7 @@ export const Auth=({type}:{type: "signup"|"signin"})=>{
             console.log("Response data:", response.data);
             if (token) {
                 localStorage.setItem("token", token);
-                navigate("/product");
+                navigate("/");
             } else {
                 alert("No token received");
         }

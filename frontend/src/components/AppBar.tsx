@@ -1,9 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 const AppBar = ({type}:{type: "Login"|"Profile"}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -40,7 +47,8 @@ const AppBar = ({type}:{type: "Login"|"Profile"}) => {
                 />
               </svg>
             </div>
-            <h1 className="text-xl font-bold">ecommerce</h1>
+            <Link to="/"><h1  className="text-xl font-bold">ecommerce</h1></Link>
+            
           </div>
 
           {/* Search bar */}
@@ -95,7 +103,7 @@ const AppBar = ({type}:{type: "Login"|"Profile"}) => {
               isOpen ? "block" : "hidden"
             } md:flex md:items-center md:space-x-6`}
           >
-            <a href="#" className="block px-3 py-2 rounded-md hover:bg-blue-700">
+            <a href="/" className="block px-3 py-2 rounded-md hover:bg-blue-700">
               Home
             </a>
 
@@ -109,20 +117,20 @@ const AppBar = ({type}:{type: "Login"|"Profile"}) => {
               </button>
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-lg z-10">
-                  <a href="#" className="block px-4 py-2 hover:bg-gray-200">
+                  <a href="/contact" className="block px-4 py-2 hover:bg-gray-200">
                     Contact
                   </a>
-                  <a href="#" className="block px-4 py-2 hover:bg-gray-200">
+                  <a href="/about" className="block px-4 py-2 hover:bg-gray-200">
                     About
                   </a>
-                  <a href="#" className="block px-4 py-2 hover:bg-gray-200">
+                  <a href="/services" className="block px-4 py-2 hover:bg-gray-200">
                     Services
                   </a>
                 </div>
               )}
             </div>
 
-            <a href="#" className="block px-3 py-2 rounded-md hover:bg-blue-700">
+            <a href="/cart" className="block px-3 py-2 rounded-md hover:bg-blue-700">
               <div className="flex items-center">
                 <span className="pr-2">Cart</span>
                 <svg
@@ -142,14 +150,29 @@ const AppBar = ({type}:{type: "Login"|"Profile"}) => {
               </div>
             </a>
 
-            <a
-              href="#"
-              className="block px-3 py-1 text-slate-950 rounded-md font-bold bg-slate-100 hover:bg-blue-700 hover:text-zinc-50"
-            >
-              {type=="Login"?"Login":<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
-                <path fillRule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clipRule="evenodd" />
-              </svg>}
-            </a>
+{!isLoggedIn ? (
+  <a
+    href="/signin"
+    className="block px-3 py-1 text-slate-950 rounded-md font-bold bg-slate-100 hover:bg-blue-700 hover:text-zinc-50"
+  >
+    Login
+  </a>
+) : (
+  <a
+    href="/profile"
+    className="block px-3 py-1 text-slate-950 rounded-md font-bold bg-slate-100 hover:bg-blue-700 hover:text-zinc-50"
+    title="Profile"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="size-6" viewBox="0 0 24 24">
+      <path
+        fillRule="evenodd"
+        d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+        clipRule="evenodd"
+      />
+    </svg>
+  </a>
+)}
+
           </div>
         </div>
 

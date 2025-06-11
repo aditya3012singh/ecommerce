@@ -1,16 +1,20 @@
 import React from "react";
+import AppBar from "./AppBar";
 
 const Contact = () => {
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-2xl p-8">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
+    <div className=" bg-gradient-to-b from-black  via-emerald-950 to-black">
+    <div className="min-h-screen  ">
+      <AppBar type="Profile"/>
+      <div className="pt-24">
+      <div className="max-w-4xl mx-auto bg-black   shadow-md rounded-2xl p-8">
+        <h2 className="text-3xl font-bold text-center text-white mb-8">
           Contact Us
         </h2>
 
         <form className="grid grid-cols-1 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Full Name</label>
+            <label className="block text-sm font-medium text-white">Full Name</label>
             <input
               type="text"
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
@@ -19,7 +23,7 @@ const Contact = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email Address</label>
+            <label className="block text-sm font-medium text-white">Email Address</label>
             <input
               type="email"
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
@@ -28,7 +32,7 @@ const Contact = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Subject</label>
+            <label className="block text-sm font-medium text-white">Subject</label>
             <input
               type="text"
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
@@ -37,7 +41,7 @@ const Contact = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Message</label>
+            <label className="block text-sm font-medium text-white">Message</label>
             <textarea
               rows={5}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
@@ -53,11 +57,12 @@ const Contact = () => {
           </button>
         </form>
 
-        <div className="mt-10 text-center text-gray-600 text-sm">
+        <div className="mt-10 text-center text-white text-sm">
           Or email us directly at <span className="text-indigo-600 font-semibold">support@yourstore.com</span>
         </div>
       </div>
-    </div>
+      </div>
+    </div></div>
   );
 };
 

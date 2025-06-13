@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom"
 import AppBar from "./AppBar"
 
 
-export const Auth=({type}:{type: "signup"|"signin"})=>{
+export const Auth=({type, role}:{type: "signup"|"signin", role: "CUSTOMER"|"ADMIN"})=>{
     const navigate=useNavigate()
     const [loading, setLoading] = useState(false);
 
@@ -13,7 +13,7 @@ export const Auth=({type}:{type: "signup"|"signin"})=>{
         email:"",
         name:"",
         password:"",
-        role:"CUSTOMER"
+        role: role
     })
 
     async function sendRequest(){
@@ -41,7 +41,7 @@ export const Auth=({type}:{type: "signup"|"signin"})=>{
         }
     }
     return <div >
-        <AppBar type={"Login"}/>
+        {role=="CUSTOMER"?<AppBar type="Login"/>:null}
         <div className="h-screen flex justify-center flex-col shadow-xl ">
         
         {/* {JSON.stringify(postInput)} */}

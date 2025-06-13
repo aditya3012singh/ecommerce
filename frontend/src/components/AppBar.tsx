@@ -103,8 +103,8 @@ const AppBar = ({type}:{type: "Login"|"Profile"}) => {
               isOpen ? "block" : "hidden"
             } md:flex md:items-center md:space-x-6`}
           >
-            <a href="/" className="block px-3 py-2 rounded-md hover:bg-blue-700">
-              Home
+            <a href="/seller" className="block px-3 py-2 rounded-md hover:bg-blue-700">
+              Become a Seller
             </a>
 
             {/* Dropdown */}

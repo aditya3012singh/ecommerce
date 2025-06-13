@@ -9,6 +9,7 @@ import About from './components/About';
 import Services from './components/Services';
 import ProtectedRoute from './components/ProtectedRoute';
 import Profile from './components/Profile';
+import { SellerHome } from './pages/SellerHome';
 
 function App() {
   return (
@@ -18,13 +19,13 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<Home />} />
           <Route path="/signin" element={<Signin />} />
-
+          <Route path="/seller" element={<SellerHome/>}/>
           <Route
             path="/product/:id"
             element={
-              <ProtectedRoute>
+
                 <Product />
-              </ProtectedRoute>
+
             }
           />
           <Route

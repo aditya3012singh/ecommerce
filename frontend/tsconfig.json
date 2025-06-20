@@ -1,10 +1,5 @@
 {
-  "compilerOptions": {
-    "baseUrl": ".", // important!
-    "paths": {
-      "@mui/*": ["node_modules/@mui/*"]
-    }
-  },
+  "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }

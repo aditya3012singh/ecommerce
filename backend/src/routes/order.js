@@ -6,120 +6,155 @@ import { requireAdmin } from "../middlewares/roleMiddleware.js";
 const prisma = new PrismaClient();
 const router = express.Router();
 
-router.use(authMiddleware)
+router.use(authMiddleware);
 
-router.post("/orderitems", async (req,res)=>{
-    const userId=req.userId
-    try{
-        const cartItems=await prisma.cartItem.findMany({
-            where:{
-                userId
-            },
-            include:{
-                product:true
-            }
-        })
-        if(!cartItems){
-            res.status(400).json({message:"cart is empty"})
-        }
-        const totalamout=cartItems.reduce((acc,item)=>{
-            return acc + item.product.price*item.quantity
-        },0)
+/* ----------------------- CREATE ORDER ----------------------- */
+router.post("/orderitems", async (req, res) => {
+  const userId = req.userId;
 
-        const order=await prisma.order.create({
-            data:{
-                userId,
-                totalamout,
-                orderItems:{
-                    create: cartItems.map(item=>({
-                        productId: item.productId,
-                        quantity: item.quantity,
-                        price:item.product.price
-                    }))
-                }
-            },
-            include:{
-                orderItems:true
-            }
-        })
-        await prisma.cartItem.deleteMany({
-            where:{userId}
-        })
-        res.status(201).json({message:"Order placed",order})
-    } catch (error) {
-        console.error("Create order error:", error);
-        res.status(500).json({ message: "Server error" });
-    }
-})
+  try {
+    const cartItems = await prisma.cartItem.findMany({
+      where: { userId },
+      include: { product: true }
+    });
 
-router.get("/orderitems", async (req,res) =>{
-    const userId=req.userId
-    try{
-        const orders=await prisma.order.findMany({
-            where:{
-                userId
-            },
-            include:{
-                product:true
-            }
-        })
-        res.status(200).json({ orders });
-    } catch (error) {
-        console.error("Get orders error:", error);
-        res.status(500).json({ message: "Server error" });
-    }
-})
-
-router.put("/order/:id/status", requireAdmin, async (req,res)=>{
-    const { id } = req.params;
-    const { status } = req.body;
-
-    const validStatus=["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"]
-    if(!validStatus.includes(status)){
-        return res.status(400).json({ message: "Invalid order status" });
+    if (cartItems.length === 0) {
+      return res.status(400).json({ message: "Cart is empty" });
     }
 
-    try{
-        const order=await prisma.order.findUnique({
-            where:{id}
-        })
-
-        const updateOrder=await prisma.order.update({
-            where:{id},
-            data:{status}
-        })
-        return res.status(200).json({
-            message: "Order status updated successfully",
-            order: updatedOrder
+    // Validate stock availability
+    for (const item of cartItems) {
+      if (item.quantity > item.product.stock) {
+        return res.status(400).json({ 
+          message: `Insufficient stock for ${item.product.title}. Available: ${item.product.stock}, Requested: ${item.quantity}` 
         });
-    } catch (error) {
-        console.error("Order status update error:", error);
-        return res.status(500).json({ message: "Internal server error" });
+      }
     }
-})
 
-router.put("/order/:id/cancel", authMiddleware, async (req,res)=>{
-    const {id}=req.params
+    // calculate total amount
+    const total = cartItems.reduce((acc, item) => {
+      return acc + item.product.price * item.quantity;
+    }, 0);
 
-    try{
-        const order=await prisma.order.findUnique({where:id})
-        if(!order || order.userId !== req.userId){
-            return res.status(404).json({ message: "Order not found" });
+    const order = await prisma.order.create({
+      data: {
+        userId,
+        total,
+        orderItems: {
+          create: cartItems.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity
+          }))
         }
-        if (order.status !== "PENDING") {
-            return res.status(400).json({ message: "Only pending orders can be cancelled" });
+      },
+      include: { 
+        orderItems: {
+          include: { product: true }
         }
-        const cancelledOrder = await prisma.order.update({
-            where: { id },
-            data: { status: "CANCELLED" }
-        });
-        return res.status(200).json({message:"Order Cancelled", order:cancelledOrder})
-    }catch (error) {
-        console.error("Cancel order error:", error);
-        return res.status(500).json({ message: "Server error" });
+      }
+    });
+
+    await prisma.cartItem.deleteMany({ where: { userId } });
+
+    return res.status(201).json({
+      message: "Order placed",
+      order
+    });
+  } catch (error) {
+    console.error("Create order error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+/* ----------------------- GET USER ORDERS ----------------------- */
+router.get("/orderitems", async (req, res) => {
+  const userId = req.userId;
+
+  try {
+    const orders = await prisma.order.findMany({
+      where: { userId },
+      include: {
+        orderItems: {
+          include: {
+            product: true
+          }
+        }
+      }
+    });
+
+    return res.status(200).json({ orders });
+  } catch (error) {
+    console.error("Get orders error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+/* ----------------------- UPDATE ORDER STATUS (ADMIN) ----------------------- */
+router.put("/order/:id/status", requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const validStatus = ["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"];
+
+  if (!validStatus.includes(status)) {
+    return res.status(400).json({ message: "Invalid order status" });
+  }
+
+  try {
+    const order = await prisma.order.findUnique({ where: { id } });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
     }
-})
 
+    const updatedOrder = await prisma.order.update({
+      where: { id },
+      data: { status }
+    });
+
+    return res.status(200).json({
+      message: "Order status updated successfully",
+      order: updatedOrder
+    });
+  } catch (error) {
+    console.error("Order status update error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+/* ----------------------- CANCEL ORDER ----------------------- */
+router.put("/order/:id/cancel", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const order = await prisma.order.findUnique({ where: { id } });
+
+    if (!order || order.userId !== req.userId) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.status !== "PENDING") {
+      return res
+        .status(400)
+        .json({ message: "Only pending orders can be cancelled" });
+    }
+
+    const cancelledOrder = await prisma.order.update({
+      where: { id },
+      data: { status: "CANCELLED" }
+    });
+
+    return res.status(200).json({
+      message: "Order cancelled",
+      order: cancelledOrder
+    });
+  } catch (error) {
+    console.error("Cancel order error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+/* ----------------------- GET ORDER DETAILS ----------------------- */
 router.get("/order/:id", async (req, res) => {
   const orderId = req.params.id;
 
@@ -128,28 +163,26 @@ router.get("/order/:id", async (req, res) => {
       where: { id: orderId },
       include: {
         orderItems: {
-          include: {
-            product: true,
-          },
+          include: { product: true }
         },
-        user: true, // optional, if you want user info
-      },
+        user: true
+      }
     });
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Format items for cleaner response
     const items = order.orderItems.map((item) => ({
       product: {
         id: item.product.id,
         title: item.product.title,
         price: item.product.price,
-        imageUrl: item.product.imageUrl,
+        imageUrl: item.product.imageUrl
       },
       quantity: item.quantity,
-      subtotal: item.product.price * item.quantity,
+      price: item.product.price,
+      subtotal: item.product.price * item.quantity
     }));
 
     return res.status(200).json({
@@ -157,8 +190,7 @@ router.get("/order/:id", async (req, res) => {
       status: order.status,
       total: order.total,
       createdAt: order.createdAt,
-      items,
-      // optionally user info here if needed
+      items
     });
   } catch (error) {
     console.error("Error fetching order:", error);
@@ -166,4 +198,4 @@ router.get("/order/:id", async (req, res) => {
   }
 });
 
-export default router
+export default router;

@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import productRouter from "./routes/product.js"
 import cartRoutes from "./routes/cart.js";
 import orderRoutes from "./routes/order.js"
+import paymentRoutes from "./routes/payment.js";
+
 dotenv.config();
 import cors from "cors"
 
@@ -17,10 +19,12 @@ app.get("/", (req, res) => {
   res.send("API running!");
 });
 
-app.use("/api/v1/", userRouter);
-app.use("/api/v1/",productRouter)
-app.use("/api/v1/",cartRoutes)
-app.use("/api/v1",orderRoutes)
+app.use("/api/v1", userRouter);
+app.use("/api/v1", productRouter);
+app.use("/api/v1", cartRoutes);
+app.use("/api/v1", orderRoutes);
+app.use("/api/v1/payment", paymentRoutes);
+
 console.log('DATABASE_URL:', process.env.DATABASE_URL);
 
 

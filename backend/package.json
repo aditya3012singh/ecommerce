@@ -15,8 +15,10 @@
     "@prisma/client": "^6.9.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "razorpay": "^2.9.6",
     "zod": "^3.25.53"
   },
   "devDependencies": {

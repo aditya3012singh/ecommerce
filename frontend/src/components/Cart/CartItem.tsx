@@ -1,34 +1,35 @@
 import React from 'react';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { CartItem as CartItemType } from '../../types';
-import { useCart } from '../../context/CartContext';
+import { useAppDispatch } from '../../store/hooks';
+import { updateCartItem, removeFromCart } from '../../store/slices/cartSlice';
 
 interface CartItemProps {
   item: CartItemType;
 }
 
 const CartItem: React.FC<CartItemProps> = ({ item }) => {
-  const { updateCartItem, removeFromCart } = useCart();
+  const dispatch = useAppDispatch();
 
   const handleQuantityChange = async (newQuantity: number) => {
     if (newQuantity < 1) return;
-    await updateCartItem(item.id, newQuantity);
+    await dispatch(updateCartItem({ id: item.id, quantity: newQuantity }));
   };
 
   const handleRemove = async () => {
-    await removeFromCart(item.id);
+    await dispatch(removeFromCart(item.id));
   };
 
   return (
     <div className="flex items-center space-x-4 bg-white p-6 rounded-lg shadow-md">
       <img
         src={item.product.imageUrl}
-        alt={item.product.name}
+        alt={item.product.title}
         className="w-20 h-20 object-cover rounded-lg"
       />
       
       <div className="flex-1">
-        <h3 className="text-lg font-semibold text-gray-900">{item.product.name}</h3>
+        <h3 className="text-lg font-semibold text-gray-900">{item.product.title}</h3>
         <p className="text-gray-600">${item.product.price.toFixed(2)} each</p>
       </div>
       

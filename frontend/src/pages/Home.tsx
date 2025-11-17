@@ -1,29 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Shield, Truck, HeadphonesIcon } from 'lucide-react';
-import { Product } from '../types';
-import { productsAPI } from '../services/api';
 import ProductGrid from '../components/Products/ProductGrid';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import {
+  fetchProducts,
+  selectProducts,
+  selectProductsLoading,
+} from '../store/slices/productsSlice';
 
 const Home: React.FC = () => {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const products = useAppSelector(selectProducts);
+  const loading = useAppSelector(selectProductsLoading);
 
   useEffect(() => {
-    const fetchFeaturedProducts = async () => {
-      try {
-        const response = await productsAPI.getAll();
-        // Get first 4 products as featured
-        setFeaturedProducts(response.products.slice(0, 4));
-      } catch (error) {
-        console.error('Failed to fetch featured products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!products.length) {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch, products.length]);
 
-    fetchFeaturedProducts();
-  }, []);
+  const featuredProducts = useMemo(() => products.slice(0, 4), [products]);
 
   return (
     <div className="min-h-screen">

@@ -1,34 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Product } from '../types';
-import { productsAPI } from '../services/api';
 import ProductGrid from '../components/Products/ProductGrid';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import {
+  fetchProducts,
+  selectProducts,
+  selectProductsLoading,
+} from '../store/slices/productsSlice';
 
 const Products: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const dispatch = useAppDispatch();
+  const products = useAppSelector(selectProducts);
+  const loading = useAppSelector(selectProductsLoading);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
 
-  const categories = [...new Set(products.map(product => product.Category))];
+  const categories = [...new Set(products.map((product) => product.Category))];
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await productsAPI.getAll();
-        setProducts(response.products);
-        setFilteredProducts(response.products);
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+    if (!products.length) {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch, products.length]);
 
   useEffect(() => {
     let filtered = products;

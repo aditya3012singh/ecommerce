@@ -1,39 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingCart, ArrowLeft, Package, Star } from 'lucide-react';
-import { Product } from '../types';
-import { productsAPI } from '../services/api';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import {
+  fetchProductById,
+  clearCurrentProduct,
+  selectCurrentProduct,
+  selectProductsLoading,
+} from '../store/slices/productsSlice';
+import { addToCart } from '../store/slices/cartSlice';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
-  const { user } = useAuth();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const product = useAppSelector(selectCurrentProduct);
+  const loading = useAppSelector(selectProductsLoading);
+  const { user } = useAppSelector((state) => state.auth);
+  const { error } = useAppSelector((state) => state.products);
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      if (!id) return;
-      
-      try {
-        const response = await productsAPI.getById(id);
-        setProduct(response.product);
-      } catch (error) {
-        console.error('Failed to fetch product:', error);
-        toast.error('Product not found');
-        navigate('/products');
-      } finally {
-        setLoading(false);
-      }
+    if (id) {
+      dispatch(fetchProductById(id));
+    }
+    return () => {
+      dispatch(clearCurrentProduct());
     };
+  }, [dispatch, id]);
 
-    fetchProduct();
-  }, [id, navigate]);
+  useEffect(() => {
+    if (product) {
+      setQuantity(1);
+    }
+  }, [product]);
+
+  useEffect(() => {
+    if (error && !product) {
+      toast.error(error);
+      navigate('/products');
+    }
+  }, [error, navigate, product]);
 
   const handleAddToCart = async () => {
     if (!user) {
@@ -43,10 +51,10 @@ const ProductDetail: React.FC = () => {
     
     if (!product) return;
     
-    await addToCart(product.id, quantity);
+    await dispatch(addToCart({ productId: product.id, quantity }));
   };
 
-  if (loading) {
+  if (loading && !product) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>

@@ -1,16 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, ArrowLeft } from 'lucide-react';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
-import { ordersAPI } from '../services/api';
 import CartItem from '../components/Cart/CartItem';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import {
+  fetchCart,
+  clearCart as clearCartState,
+  selectCartItems,
+  selectCartCount,
+  selectCartTotal,
+} from '../store/slices/cartSlice';
+import { createOrder } from '../store/slices/ordersSlice';
 import toast from 'react-hot-toast';
 
 const Cart: React.FC = () => {
-  const { cartItems, cartTotal, cartCount, clearCart } = useCart();
-  const { user } = useAuth();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const cartItems = useAppSelector(selectCartItems);
+  const cartCount = useAppSelector(selectCartCount);
+  const cartTotal = useAppSelector(selectCartTotal);
+  const cartLoading = useAppSelector((state) => state.cart.loading);
+  const { user } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchCart());
+    } else {
+      dispatch(clearCartState());
+    }
+  }, [dispatch, user]);
 
   const handleCheckout = async () => {
     if (!user) {
@@ -19,14 +37,22 @@ const Cart: React.FC = () => {
     }
 
     try {
-      await ordersAPI.createOrder();
-      clearCart();
-      toast.success('Order placed successfully!');
-      navigate('/orders');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to place order');
+      const createdOrder = await dispatch(createOrder()).unwrap();
+      await dispatch(fetchCart());
+      navigate(`/orders/${createdOrder.id}`);
+    } catch (error) {
+      const message = typeof error === 'string' ? error : 'Failed to place order';
+      toast.error(message);
     }
   };
+
+  if (cartLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (

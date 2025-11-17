@@ -1,28 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Package, Calendar, DollarSign, Eye } from 'lucide-react';
-import { Order } from '../types';
-import { ordersAPI } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import {
+  fetchOrders,
+  selectOrders,
+  selectOrdersLoading,
+} from '../store/slices/ordersSlice';
 
 const Orders: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const orders = useAppSelector(selectOrders);
+  const loading = useAppSelector(selectOrdersLoading);
+  const { user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await ordersAPI.getOrders();
-        setOrders(response.orders);
-      } catch (error) {
-        console.error('Failed to fetch orders:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, []);
+    if (user) {
+      dispatch(fetchOrders());
+    }
+  }, [dispatch, user]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -40,6 +37,28 @@ const Orders: React.FC = () => {
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center space-y-4">
+        <h2 className="text-2xl font-bold text-gray-900">Please log in to view your orders</h2>
+        <div className="flex space-x-4">
+          <button
+            onClick={() => navigate('/login')}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          >
+            Login
+          </button>
+          <button
+            onClick={() => navigate('/signup')}
+            className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+          >
+            Sign Up
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

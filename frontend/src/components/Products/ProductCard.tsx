@@ -1,17 +1,17 @@
 import React from 'react';
 import { ShoppingCart, Eye } from 'lucide-react';
 import { Product } from '../../types';
-import { useCart } from '../../context/CartContext';
-import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { addToCart } from '../../store/slices/cartSlice';
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { addToCart } = useCart();
-  const { user } = useAuth();
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const handleAddToCart = async (e: React.MouseEvent) => {
@@ -20,7 +20,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       navigate('/login');
       return;
     }
-    await addToCart(product.id);
+    await dispatch(addToCart({ productId: product.id, quantity: 1 }));
   };
 
   const handleViewProduct = () => {

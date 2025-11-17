@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { signup as signupAction } from '../store/slices/authSlice';
 
 const Signup: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -13,8 +14,8 @@ const Signup: React.FC = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { signup } = useAuth();
+  const dispatch = useAppDispatch();
+  const { loading } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -32,12 +33,19 @@ const Signup: React.FC = () => {
       return;
     }
 
-    setLoading(true);
-    const success = await signup(formData.email, formData.name, formData.password, formData.role);
-    if (success) {
+    try {
+      await dispatch(
+        signupAction({
+          email: formData.email,
+          name: formData.name,
+          password: formData.password,
+          role: formData.role,
+        })
+      ).unwrap();
       navigate('/');
+    } catch (error) {
+      console.error('Signup failed:', error);
     }
-    setLoading(false);
   };
 
   return (

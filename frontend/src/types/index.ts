@@ -3,6 +3,7 @@ export interface User {
   email: string;
   name: string;
   role: 'ADMIN' | 'CUSTOMER';
+  createdAt?: string;
 }
 
 export interface Product {
@@ -23,7 +24,7 @@ export interface CartItem {
   totalPrice: number;
   product: {
     id: string;
-    name: string;
+    title: string;
     price: number;
     imageUrl: string;
   };
@@ -38,6 +39,7 @@ export interface Order {
 }
 
 export interface OrderItem {
+  id?: string;
   product: {
     id: string;
     title: string;
@@ -45,6 +47,7 @@ export interface OrderItem {
     imageUrl: string;
   };
   quantity: number;
+  price: number;
   subtotal: number;
 }
 

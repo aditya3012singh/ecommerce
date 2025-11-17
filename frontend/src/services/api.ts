@@ -40,7 +40,7 @@ export const authAPI = {
 // Products API
 export const productsAPI = {
   getAll: async (): Promise<{ products: Product[] }> => {
-    const response = await api.get('/probulk');
+    const response = await api.get('/products');
     return response.data;
   },
 
@@ -50,7 +50,7 @@ export const productsAPI = {
   },
 
   create: async (data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<{ product: Product }> => {
-    const response = await api.post('/postproduct', data);
+    const response = await api.post('/product', data);
     return response.data;
   },
 
@@ -112,6 +112,24 @@ export const ordersAPI = {
 
   cancelOrder: async (id: string) => {
     const response = await api.put(`/order/${id}/cancel`);
+    return response.data;
+  },
+};
+
+// Payment API
+export const paymentAPI = {
+  createPayment: async (orderId: string) => {
+    const response = await api.post('/payment/create', { orderId });
+    return response.data;
+  },
+
+  verifyPayment: async (data: {
+    orderId: string;
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+  }) => {
+    const response = await api.post('/payment/verify', data);
     return response.data;
   },
 };

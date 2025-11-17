@@ -1,16 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, LogOut, Package, Settings } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { useCart } from '../../context/CartContext';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { logout } from '../../store/slices/authSlice';
+import { fetchCart, clearCart, selectCartCount } from '../../store/slices/cartSlice';
 
 const Header: React.FC = () => {
-  const { user, logout } = useAuth();
-  const { cartCount } = useCart();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { user } = useAppSelector((state) => state.auth);
+  const cartCount = useAppSelector(selectCartCount);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchCart());
+    } else {
+      dispatch(clearCart());
+    }
+  }, [dispatch, user]);
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
+    dispatch(clearCart());
     navigate('/');
   };
 

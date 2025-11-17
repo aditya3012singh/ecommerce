@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { signin } from '../store/slices/authSlice';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { loading } = useAppSelector((state) => state.auth);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
-    const success = await login(email, password);
-    if (success) {
+    try {
+      await dispatch(signin({ email, password })).unwrap();
       navigate('/');
+    } catch (error) {
+      console.error('Login failed:', error);
     }
-    
-    setLoading(false);
   };
 
   return (
